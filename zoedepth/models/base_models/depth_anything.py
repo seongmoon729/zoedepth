@@ -24,6 +24,7 @@
 
 import torch
 import torch.nn as nn
+from huggingface_hub import hf_hub_download
 import numpy as np
 from torchvision.transforms import Normalize
 from zoedepth.models.base_models.dpt_dinov2.dpt import DPT_DINOv2
@@ -338,7 +339,13 @@ class DepthAnythingCore(nn.Module):
         
         depth_anything = DPT_DINOv2(out_channels=[256, 512, 1024, 1024], use_clstoken=False)
         
-        state_dict = torch.load('./checkpoints/depth_anything_vitl14.pth', map_location='cpu')
+        ckpt_path = hf_hub_download(
+            repo_id='LiheYoung/Depth-Anything',
+            repo_type="space",
+            filename='checkpoints/depth_anything_vitl14.pth',
+            revision="main",
+        )
+        state_dict = torch.load(ckpt_path, map_location='cpu')
         depth_anything.load_state_dict(state_dict)
         
         kwargs.update({'keep_aspect_ratio': force_keep_ar})
